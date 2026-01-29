@@ -3,179 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bashvm - Download</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="header.js"></script>
+    <title>bashvm</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #707070;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 80px auto 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+            color: #000000;
+        }
+        p {
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .modern-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            text-decoration: none;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .modern-button:hover {
+            background-color: #2e2e2e;
+            transform: translateY(-2px);
+        }
+        .modern-button i {
+            margin-right: 8px;
+        }
+        .modern-button:active {
+            transform: translateY(0);
+        }
+        a.modern-button-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+        }
+        #menu {
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #menu a {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 17px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #menu a:hover {
+            background-color: #575757;
+            color: white;
+        }
+        .menu-icon {
+            margin-right: 5px;
+        }
+        .menu-icon:hover {
+            color: #4CAF50;
+        }
+    </style>
 </head>
-<body class="bg-[#0f1218] font-sans text-gray-200">
-    <nav class="nav-header fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <a href="index.html" class="flex items-center">
-                            <svg class="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span class="ml-2 text-xl font-bold text-white">bashvm</span>
-                        </a>
-                    </div>
-                    <div class="hidden md:block">
-                        <div class="ml-10 flex items-baseline space-x-2">
-                            <a href="index.html" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fas fa-home mr-2"></i>Home
-                            </a>
-                            <a href="download.html" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fas fa-download mr-2"></i>Download
-                            </a>
-                            <a href="guide.html" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fas fa-book mr-2"></i>Guide
-                            </a>
-                            <a href="screenshots.html" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fas fa-image mr-2"></i>Screenshots
-                            </a>
-                            <a href="sponsors.html" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fas fa-handshake mr-2"></i>Sponsors
-                            </a>
-                            <a href="contributors.html" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fas fa-handshake mr-2"></i>Contributors
-                            </a>
-                            <a href="donate.html" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fas fa-donate mr-2"></i>Donate
-                            </a>
-                            <a href="https://github.com/babywhale321/bashvm" class="nav-item text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-300">
-                                <i class="fab fa-github mr-2"></i>Github
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="-mr-2 flex md:hidden">
-                    <button id="mobile-menu-btn" type="button" class="bg-gray-700 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-600 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="md:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="index.html" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fas fa-home mr-2"></i>Home
-                </a>
-                <a href="download.html" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fas fa-download mr-2"></i>Download
-                </a>
-                <a href="guide.html" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fas fa-book mr-2"></i>Guide
-                </a>
-                <a href="screenshots.html" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fas fa-image mr-2"></i>Screenshots
-                </a>
-                <a href="sponsors.html" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fas fa-handshake mr-2"></i>Sponsors
-                </a>
-                <a href="contributors.html" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fas fa-handshake mr-2"></i>Contributors
-                </a>
-                <a href="donate.html" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fas fa-donate mr-2"></i>Donate
-                </a>
-                <a href="https://github.com/babywhale321/bashvm" class="nav-item text-white block px-3 py-2 rounded-md text-base font-medium">
-                    <i class="fab fa-github mr-2"></i>Github
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', initHeader);
-    </script>
-
-    <div class="min-h-screen pt-24 pb-12">
-        <div class="max-w-4xl mx-auto px-4 py-12">
-            <div class="text-center mb-16">
-                <div class="floating mb-6 inline-block">
-                    <svg class="h-16 w-16 mx-auto text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                </div>
-                <h1 class="text-4xl font-bold mb-4 text-white">Download bashvm</h1>
-                <p class="text-xl text-gray-400 mb-8" id="release-name">Loading latest release...</p>
-            </div>
-
-            <div class="space-y-4 max-w-md mx-auto">
-                <a href="#" id="link-zip" class="block bg-[#141820] border border-gray-800 rounded-lg p-4 hover:bg-[#1a1f2a] transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-archive text-blue-400 mr-3 text-xl"></i>
-                            <span class="text-gray-300">bashvm.zip</span>
-                        </div>
-                        <span class="bg-blue-400/20 text-blue-400 px-3 py-1 rounded-full text-xs">ZIP</span>
-                    </div>
-                </a>
-                
-                <a href="#" id="link-tar" class="block bg-[#141820] border border-gray-800 rounded-lg p-4 hover:bg-[#1a1f2a] transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-archive text-green-400 mr-3 text-xl"></i>
-                            <span class="text-gray-300">bashvm.tar.gz</span>
-                        </div>
-                        <span class="bg-green-400/20 text-green-400 px-3 py-1 rounded-full text-xs">TAR.GZ</span>
-                    </div>
-                </a>
-
-                <div class="pt-4 text-center">
-                    <a href="archived.html" class="text-blue-400 hover:text-blue-300 inline-flex items-center transition-colors">
-                        <i class="fas fa-history mr-2"></i>
-                        Previous Versions
-                    </a>
-                </div>
-            </div>
-
-            <div class="mt-12">
-                <div class="card bg-[#141820] border border-gray-800 rounded-xl p-6">
-                    <h2 class="text-xl font-semibold mb-4 text-center text-white">Quick Installation</h2>
-                    <div class="relative">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex space-x-2">
-                                <div class="h-3 w-3 rounded-full bg-red-500"></div>
-                                <div class="h-3 w-3 rounded-full bg-yellow-500"></div>
-                                <div class="h-3 w-3 rounded-full bg-green-500"></div>
-                            </div>
-                            <button class="text-gray-500 hover:text-gray-300 transition-colors" 
-                                    onclick="copyToClipboard('apt install git -y\ngit clone https://github.com/babywhale321/bashvm.git\ncd bashvm/\nbash bashvm-installer.sh\nbash bashvm.sh', this)">
-                                <i class="fas fa-copy"></i>
-                                <span class="copy-message text-xs text-green-400 hidden ml-2">Copied!</span>
-                            </button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <pre class="text-gray-300 font-mono text-sm whitespace-pre"><code>apt install git -y
-git clone https://github.com/babywhale321/bashvm.git
-cd bashvm/
-bash bashvm-installer.sh
-bash bashvm.sh</code></pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body>
+    <div id="menu">
+        <a href="index.html">
+            <i class="fas fa-home menu-icon"></i>Home
+        </a>
+        <a href="download.html">
+            <i class="fas fa-download menu-icon"></i>Download
+        </a>
+        <a href="guide.html">
+            <i class="fas fa-book menu-icon"></i>Guide
+        </a>
+        <a href="screenshots.html">
+            <i class="fas fa-image menu-icon"></i>Screenshots
+        </a>
+        <a href="sponsors.html">
+            <i class="fas fa-handshake menu-icon"></i>Sponsors
+        </a>
+        <a href="donate.html">
+            <i class="fas fa-donate menu-icon"></i>Donate
+        </a>
+        <a href="https://github.com/babywhale321/bashvm">
+            <i class="fab fa-github"></i>Github
+        </a>
     </div>
-    
+    <div class="container">
+        <br>
+        <h1><i class="fas fa-download"></i> Download</h1>
+        <br>
+        <p><b><u id="release-name">Loading...</u></b></p>
+        <p></p>
+        <button class="modern-button" id="button-zip">
+            <a href="#" class="modern-button-link" style="color:white;" id="link-zip">
+                <i class="fas fa-download"></i> bashvm.zip
+            </a>
+        </button>
+        <button class="modern-button" id="button-tar">
+            <a href="#" class="modern-button-link" style="color:white;" id="link-tar">
+                <i class="fas fa-download"></i> bashvm.tar.gz
+            </a>
+        </button>
+        <a href="https://bashvm.com/archive/">Other Versions</a>
+    </div>
+
     <script>
         async function fetchLatestRelease() {
             try {
                 const response = await fetch('https://api.github.com/repos/babywhale321/bashvm/releases/latest');
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 const release = await response.json();
-                document.getElementById('release-name').innerText = release.name || 'Latest Release';
+                document.getElementById('release-name').innerText = release.name;
 
                 const assets = release.assets;
                 const zipAsset = assets.find(asset => asset.name.endsWith('.zip'));
@@ -184,35 +157,24 @@ bash bashvm.sh</code></pre>
                 if (zipAsset) {
                     document.getElementById('link-zip').href = zipAsset.browser_download_url;
                 } else {
-                    document.getElementById('link-zip').classList.add('hidden');
+                    document.getElementById('button-zip').style.display = 'none';
                 }
 
                 if (tarAsset) {
                     document.getElementById('link-tar').href = tarAsset.browser_download_url;
                 } else {
-                    document.getElementById('link-tar').classList.add('hidden');
+                    document.getElementById('button-tar').style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error fetching the latest release:', error);
                 document.getElementById('release-name').innerText = 'Failed to load release data';
-                document.getElementById('link-zip').classList.add('hidden');
-                document.getElementById('link-tar').classList.add('hidden');
+                document.getElementById('button-zip').style.display = 'none';
+                document.getElementById('button-tar').style.display = 'none';
             }
         }
 
-        function copyToClipboard(text, button) {
-            navigator.clipboard.writeText(text).then(function() {
-                const message = button.querySelector('.copy-message');
-                message.classList.remove('hidden');
-                setTimeout(() => {
-                    message.classList.add('hidden');
-                }, 2000);
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
-        }
-
         fetchLatestRelease();
-    </script>
+            </script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vef91dfe02fce4ee0ad053f6de4f175db1715022073587" integrity="sha512-sDIX0kl85v1Cl5tu4WGLZCpH/dV9OHbA4YlKCuCiMmOQIk4buzoYDZSFj+TvC71mOBLh8CDC/REgE0GX0xcbjA==" data-cf-beacon='{"rayId":"88e908ccebe25c20","r":1,"version":"2024.4.1","token":"0e25c807e5b54c65886eb558a7f78543"}' crossorigin="anonymous"></script>
 </body>
 </html>
