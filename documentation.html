@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BashVM — Documentation</title>
+ <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #707070;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 80px auto 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #000000;
+        }
+        p {
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .command {
+            background-color: #272822;
+            color: #f8f8f2;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+            overflow-x: auto;
+        }
+        .command code {
+            display: block;
+            white-space: pre-wrap;
+        }
+        #menu {
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #menu a {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 17px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #menu a:hover {
+            background-color: #575757;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            #menu {
+                flex-direction: column;
+            }
+            #menu a {
+                text-align: left;
+                padding: 10px 20px;
+            }
+            .container {
+                margin: 120px 20px 20px;
+            }
+        }
+        h2 {
+            color: #000;
+            margin-top: 2em;
+            border-bottom: 2px solid #333;
+            padding-bottom: 6px;
+        }
+        h3 { color: #222; margin-top: 1.6em; }
+        h4 { color: #333; }
+        h2[id], h3[id] { scroll-margin-top: 80px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.95em;
+        }
+        caption {
+            caption-side: top;
+            text-align: left;
+            font-weight: bold;
+            padding-bottom: 8px;
+            color: #555;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background: #333; color: #fff; }
+        tr:nth-child(even) td { background: #f7f7f7; }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f0f0f0;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 0.92em;
+        }
+        .command code {
+            background: transparent;
+            padding: 0;
+        }
+        kbd {
+            background: #333;
+            color: #fff;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-family: inherit;
+        }
+        .key { font-weight: bold; color: #000; text-align: center; }
+        .toc {
+            background: #f7f7f7;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 16px 20px 20px;
+        }
+        .toc h2 { margin-top: 0; border: none; }
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px 28px;
+            text-align: left;
+        }
+        .toc-group h3 {
+            margin: 6px 0 6px;
+            font-size: 0.78em;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+        }
+        .toc-group a {
+            display: block;
+            padding: 2px 0;
+            font-size: 0.95em;
+        }
+        main p { text-align: left; }
+        main ul, main ol { text-align: left; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<nav id="menu">
+    <a href="#overview">Overview</a>
+    <a href="#vm">VMs</a>
+    <a href="#storage">Storage</a>
+    <a href="#networks">Networks</a>
+    <a href="#snapshots">Snapshots</a>
+    <a href="#firewall">Firewall</a>
+    <a href="#portforward">Port Forward</a>
+    <a href="#vmmon">Monitors</a>
+    <a href="#sqlite">SQLite</a>
+    <a href="#install-uninstall">Install</a>
+    <a href="index.html">Back</a>
+</nav>
+
+<div class="container">
+
+<h1>BashVM — Documentation</h1>
+
+<main>
+
+<!-- ==================================================================== -->
+<h2 id="toc">Table of Contents</h2>
+<nav class="toc">
+  <div class="toc-grid">
+    <div class="toc-group">
+      <h3>Getting Started</h3>
+      <a href="#overview">Overview</a>
+      <a href="#running">Running the Script</a>
+      <a href="#main-menu">Main Menu Reference</a>
+    </div>
+    <div class="toc-group">
+      <h3>Core Features</h3>
+      <a href="#vm">1. Virtual Machines</a>
+      <a href="#storage">2. Storage Pools</a>
+      <a href="#networks">3. Networks</a>
+      <a href="#snapshots">4. Snapshots</a>
+      <a href="#edit">5. Edit Properties</a>
+      <a href="#firewall">6. Firewall Settings</a>
+    </div>
+    <div class="toc-group">
+      <h3>Advanced Features</h3>
+      <a href="#portforward">7. Port Forwarding</a>
+      <a href="#vnc">8. VNC / Console Access</a>
+      <a href="#sysmon">9. System Monitor</a>
+      <a href="#vmmon">10. VM Monitor</a>
+      <a href="#sqlite">11. SQLite Editor</a>
+    </div>
+    <div class="toc-group">
+      <h3>Setup &amp; Reference</h3>
+      <a href="#install-uninstall">12. Installation &amp; Uninstallation</a>
+      <a href="#workflows">Common Workflows</a>
+      <a href="#troubleshooting">Troubleshooting &amp; Notes</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================================================================== -->
+<h2 id="overview">Overview</h2>
+
+<p>
+  <strong>BashVM</strong> is an interactive, text-menu wrapper around the
+  <code>virsh</code> (libvirt) command-line tools. Instead of typing long
+  <code>virsh</code>, <code>virt-clone</code>, <code>ufw</code>, and
+  <code>iptables</code> invocations, you pick a numbered item from a menu and
+  answer a the prompts.
+</p>
+
+<ul>
+  <li><strong>Main menu</strong> — top level, 11 functional areas plus <code>q</code> to exit.</li>
+  <li><strong>Sub-menus</strong> — one per functional area (VMs, storage, networks, snapshots, …).</li>
+  <li><strong>Prompts</strong> — short questions that collect names, sizes, IPs, MAC addresses, etc.</li>
+</ul>
+
+<!-- ==================================================================== -->
+<h2 id="running">Running the Script</h2>
+
+<p>
+  On a fresh host, run the <a href="#hs-installer">12.1 Installer</a> first:
+</p>
+
+<div class="command">
+  <code>chmod +x bashvm-installer.sh
+sudo ./bashvm-installer.sh</code>
+</div>
+
+<p>Once the installer finishes, run the main script:</p>
+
+<div class="command">
+  <code># make it executable, then run as root
+chmod +x bashvm.sh
+sudo ./bashvm.sh</code>
+</div>
+
+<p>On launch you are shown the main menu:</p>
+
+<div class="command">
+  <code>============================ Main Menu ============================
+ 1. Virtual Machines  2. Storage Pools         3. Networks
+ 4. Snapshots         5. Edit Properties       6. Firewall Settings
+ 7. Port Forwarding   8. VNC / Console Access  9. System Monitor
+10. VM Monitor       11. SQLite Editor         q. Exit
+
+Enter your choice:</code>
+</div>
+
+<p>
+  Type the number (or letter) of the area you want and press <kbd>Enter</kbd>.
+  The helper scripts (e.g. the <a href="#hs-create-vm">1.1 Create a new / existing VM</a> option) are expected to live in the
+  same working directory as the main script or somewhere on your <code>PATH</code>.
+</p>
+
+<!-- ==================================================================== -->
+<h2 id="main-menu">Main Menu Reference</h2>
+
+<table>
+  <caption>Top-level menu choices</caption>
+  <thead>
+    <tr><th>Key</th><th>Section</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="key">1</td><td><a href="#vm">Virtual Machines</a></td><td>Show, start, reboot, shut down, clone, rename, delete, console into VMs</td></tr>
+    <tr><td class="key">2</td><td><a href="#storage">Storage Pools</a></td><td>Manage libvirt storage pools and volumes; download ISOs</td></tr>
+    <tr><td class="key">3</td><td><a href="#networks">Networks</a></td><td>Create NAT / macvtap / routed networks; DHCP reservations</td></tr>
+    <tr><td class="key">4</td><td><a href="#snapshots">Snapshots</a></td><td>List, create, delete, revert VM snapshots</td></tr>
+    <tr><td class="key">5</td><td><a href="#edit">Edit Properties</a></td><td>Open the raw XML editor for VMs, pools, networks, snapshots</td></tr>
+    <tr><td class="key">6</td><td><a href="#firewall">Firewall Settings</a></td><td>ufw status, allow/deny ports and ranges, delete rules</td></tr>
+    <tr><td class="key">7</td><td><a href="#portforward">Port Forwarding</a></td><td>NAT port-forward rules via the libvirt qemu hook</td></tr>
+    <tr><td class="key">8</td><td><a href="#vnc">VNC / Console Access</a></td><td>Show assigned VNC ports; add/remove VNC with password</td></tr>
+    <tr><td class="key">9</td><td><a href="#sysmon">System Monitor</a></td><td>Launches <code>btop</code></td></tr>
+    <tr><td class="key">10</td><td><a href="#vmmon">VM Monitor</a></td><td>Per-VM vCPU, memory, disk and network usage</td></tr>
+    <tr><td class="key">11</td><td><a href="#sqlite">SQLite Editor</a></td><td>Edit the BashVM database</td></tr>
+    <tr><td class="key">q</td><td>—</td><td>Exit the script</td></tr>
+  </tbody>
+</table>
+
+<!-- ==================================================================== -->
+<h2 id="vm">1. Virtual Machines</h2>
+
+<div class="command">
+  <code>============================== Manage Virtual Machine ==============================
+ s. Show all virtual machines  1. Show more details of a VM     2. Start a VM
+ 3. Reboot a VM                4. Shutdown a VM (graceful)      5. Shutdown a VM (force)
+ 6. Enable autostart of a VM   7. Disable autostart of a VM     8. Create a new / existing VM
+ 9. Undefine a VM             10. Create a new VM (Automated)  11. Console into a VM
+12. Change resources of a VM  13. Delete a VM                  14. Clone a VM
+15. Clone multiple VM's       16. Rename a VM                   q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>Virtual Machine sub-menu options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Underlying command / script</th><th>Prompts</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="key">s</td>
+      <td>List all VMs, running and shut off</td>
+      <td><code>virsh list --all</code></td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <td class="key">1</td>
+      <td>Show detailed info + block-device info for one VM</td>
+      <td><code>virsh dominfo</code>, <code>virsh domblkinfo --all --human</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">2</td>
+      <td>Start a VM</td>
+      <td><code>virsh start</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">3</td>
+      <td>Reboot a running VM (ACPI)</td>
+      <td><code>virsh reboot</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">4</td>
+      <td>Graceful shutdown (ACPI signal to guest)</td>
+      <td><code>virsh shutdown</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">5</td>
+      <td>Forced shutdown — pulls the virtual power cord</td>
+      <td><code>virsh destroy</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">6</td>
+      <td>Enable autostart at host boot</td>
+      <td><code>virsh autostart</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">7</td>
+      <td>Disable autostart</td>
+      <td><code>virsh autostart --disable</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">8</td>
+      <td>Guided creation of a new VM (or import an existing disk)</td>
+      <td><a href="#hs-create-vm">1.1 Create a new / existing VM</a></td>
+      <td>Name, memory, vCPUs, ISO choice, disk, network, MAC</td>
+    </tr>
+    <tr>
+      <td class="key">9</td>
+      <td>Undefine (unregister) a VM. Refuses if the VM is running; destroys it first if shut off.</td>
+      <td><code>virsh destroy</code>, <code>virsh undefine</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">10</td>
+      <td>Automated cloud-image VM creation with DHCP reservation and port forwarding</td>
+      <td><a href="#hs-create-auto-vm">1.2 Create a new VM (Automated)</a></td>
+      <td>Hostname, memory, vCPUs, disk, user, password, OS</td>
+    </tr>
+    <tr>
+      <td class="key">11</td>
+      <td>Attach to the VM's serial console (exit with <kbd>Ctrl</kbd>+<kbd>]</kbd>)</td>
+      <td><code>virsh console</code></td>
+      <td>VM name</td>
+    </tr>
+    <tr>
+      <td class="key">12</td>
+      <td>Change vCPU, memory, disk, and network attachments</td>
+      <td><a href="#hs-change-resources">1.3 Change resources of a VM</a></td>
+      <td>Sub-menu — see script reference</td>
+    </tr>
+    <tr>
+      <td class="key">13</td>
+      <td>Delete a VM, its disks, snapshots, DHCP reservation, DB entry, and forwarded ports</td>
+      <td><a href="#hs-delete-vm">1.4 Delete a VM</a></td>
+      <td>VM name, type <code>DELETE</code> to confirm</td>
+    </tr>
+    <tr>
+      <td class="key">14</td>
+      <td>Clone a single VM to a new name, auto-generating disk names</td>
+      <td><code>virt-clone --original NAME --name NEW --auto-clone</code></td>
+      <td>Source VM, new VM name</td>
+    </tr>
+    <tr>
+      <td class="key">15</td>
+      <td>Clone one source VM multiple times; names are auto-assigned by virt-clone</td>
+      <td><code>virt-clone --original NAME --auto-clone</code> in a loop</td>
+      <td>Source VM, number of clones</td>
+    </tr>
+    <tr>
+      <td class="key">16</td>
+      <td>Rename an existing VM definition</td>
+      <td><code>virsh domrename</code></td>
+      <td>Current name, new name</td>
+    </tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td>—</td><td>none</td></tr>
+  </tbody>
+</table>
+
+<h3>Example — start a VM and confirm</h3>
+<div class="command">
+  <code>Enter your choice: 2
+Enter the name of the virtual machine to start: web-server
+Domain 'web-server' started</code>
+</div>
+
+<h3>Example — clone a VM</h3>
+<div class="command">
+  <code>Enter your choice: 14
+Enter the name of the VM to clone (e.g., test-vm): template-debian
+Enter the name for the new cloned VM: web-server
+Allocating 'template-debian-clone.qcow2'   [100%]
+Clone 'web-server' created successfully.</code>
+</div>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-create-vm">1.1 Create a new / existing VM (menu 1 → 8)</h3>
+
+<p>
+  Interactive VM creation from an installation ISO, or import of an existing disk.
+  Builds a complete libvirt XML definition with Q35 machine type, host-passthrough CPU,
+  virtio disk, and a VNC listener on <code>0.0.0.0</code>, then defines the domain.
+</p>
+
+<h4>Prompts</h4>
+<table>
+  <thead>
+    <tr><th>Prompt</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Name for the new / existing VM</td><td>Used for the XML filename in <code>/etc/libvirt/qemu/</code></td></tr>
+    <tr><td>Memory in MB</td><td>e.g. <code>1024</code> for 1&nbsp;GiB</td></tr>
+    <tr><td>Number of vCPUs</td><td>e.g. <code>2</code></td></tr>
+    <tr><td>ISO choice</td><td>
+      If <code>iso.bashvm.com</code> is reachable, you get five curated ISOs:
+      Debian 13.2, Ubuntu 24.04, AlmaLinux 10.1, OpenMediaVault 7.4, TrueNAS SCALE 25.10.
+      Press <kbd>Enter</kbd> with no choice to use your own ISO or none.
+    </td></tr>
+    <tr><td>Windows based OS? (y/n)</td><td>Only asked when using your own ISO. Switches disk bus to SATA and NIC model to <code>e1000</code>.</td></tr>
+    <tr><td>Pool containing the ISO</td><td>Only asked when using your own ISO. Lists volumes in the pool first, then asks for the full ISO path.</td></tr>
+    <tr><td>Create a new disk volume? (y/n)</td><td>
+      If <strong>yes</strong>: volume name, capacity (e.g. <code>10GB</code>), pool — runs
+      <code>virsh vol-create-as … --format qcow2</code>.<br>
+      If <strong>no</strong>: lists pool volumes and asks for a full disk path.
+    </td></tr>
+    <tr><td>Network name</td><td>Default <code>default</code></td></tr>
+    <tr><td>MAC address</td><td>Leave empty to auto-generate a random <code>52:54:xx:xx:xx:xx</code> MAC.</td></tr>
+  </tbody>
+</table>
+
+<h4>What it does</h4>
+<ul>
+  <li>Downloads the selected ISO into the pool with resumable <code>wget -c</code> (saved as <code>.part</code> then renamed on completion).</li>
+  <li>Generates a random UUID via <code>/proc/sys/kernel/random/uuid</code>.</li>
+  <li>Writes XML to <code>/etc/libvirt/qemu/&lt;name&gt;.xml</code> and runs <code>virsh define</code>.</li>
+  <li>VNC is pre-configured with <code>autoport='yes'</code> on <code>0.0.0.0</code> and <strong>no password</strong>.</li>
+</ul>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-create-auto-vm">1.2 Create a new VM (Automated) (menu 1 → 10)</h3>
+
+<p>
+  Fully automated VM deployment using a <strong>cloud image</strong> and
+  <strong>cloud-init</strong>. In one pass it downloads the base image, writes a
+  cloud-init user-data file, runs <code>virt-install</code>, waits for the VM's MAC,
+  reserves a DHCP IP, and installs port-forwarding rules into the qemu hook.
+</p>
+
+<h4>Prompts</h4>
+<table>
+  <thead>
+    <tr><th>Prompt</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Hostname of the VM</td><td>Used for the domain name and cloud-init hostname</td></tr>
+    <tr><td>Memory in MB</td><td>e.g. <code>1024</code></td></tr>
+    <tr><td>Number of vCPUs</td><td>e.g. <code>2</code></td></tr>
+    <tr><td>Disk space in GB</td><td>e.g. <code>50</code></td></tr>
+    <tr><td>Username for the new VM</td><td>Created with passwordless sudo</td></tr>
+    <tr><td>Password for the new VM</td><td>Stored as <code>plain_text_passwd</code> in cloud-init and printed at the end</td></tr>
+    <tr><td>OS choice</td><td>
+      <code>1</code> = Debian 13, <code>2</code> = Ubuntu 24.04,
+      <code>3</code> = AlmaLinux 10, <code>4</code> = openSUSE Leap 15.6
+    </td></tr>
+  </tbody>
+</table>
+
+<h4>What it does</h4>
+<ol>
+  <li>Writes <code>bashvm-cloudinit.yaml</code> with the chosen user, password, SSH password auth, <code>qemu-guest-agent</code> package, and a <code>runcmd: shutdown -P 0</code> so the VM powers off after first boot (ready for the hook).</li>
+  <li>Moves the cloud-init file to <code>/var/lib/libvirt/images</code>.</li>
+  <li>Downloads the cloud image to <code>/var/lib/libvirt/images</code> if not already present.</li>
+  <li>Ensures the <code>default</code> network is active and autostarted.</li>
+  <li>Runs <code>virt-install --disk=size=…,backing_store=… --cloud-init user-data=… --network bridge=virbr0 --noautoconsole</code>.</li>
+  <li>Waits for a virtio MAC to appear, then generates a unique IPv4 in <code>192.168.122.x</code> (excluding <code>.0</code>, <code>.1</code>, <code>.255</code>) and a port range starting at <code>49152</code>, stored in <code>bashvm.db</code>.</li>
+  <li>Adds a DHCP reservation to the <code>default</code> network.</li>
+  <li>Appends iptables DNAT rules between <code>#vm_name#</code> and <code>###vm_name###</code> markers in <code>/etc/libvirt/hooks/qemu</code> (SSH plus the port range, TCP and UDP).</li>
+  <li>Restarts <code>libvirtd</code> if it was the only running VM (so the hook loads cleanly).</li>
+  <li>Prints the assigned IPv4, SSH port, port range, username, and password.</li>
+</ol>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-change-resources">1.3 Change resources of a VM (menu 1 → 12)</h3>
+
+<p>
+  A second-level menu for adjusting an existing VM's vCPU count, memory, disk size,
+  and network attachments. Most operations require the VM to be <strong>shut off</strong>.
+</p>
+
+<div class="command">
+  <code>=================================== Manage Resources ===================================
+s. Show resources of a VM             1. Add disk space to a VM     2. Shrink disk space of a VM
+3. Change the number of vcpu in a VM  4. Change the memory of a VM  5. Attach a disk to a VM
+6. Detach a disk from a VM            7. Attach Network to a VM     8. Detach Network from a VM
+q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>Resource management options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Command / behaviour</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="key">s</td>
+      <td>Show resources</td>
+      <td><code>virsh dominfo</code>, <code>virsh domfsinfo</code>, <code>virsh domblkinfo --all --human</code></td>
+    </tr>
+    <tr>
+      <td class="key">1</td>
+      <td>Grow a disk</td>
+      <td><code>virsh vol-resize &lt;vm&gt;.qcow2 &lt;size&gt; --pool &lt;pool&gt;</code> — requires VM shut off. Uses the VM name + <code>.qcow2</code> as the volume name.</td>
+    </tr>
+    <tr>
+      <td class="key">2</td>
+      <td>Shrink a disk</td>
+      <td>Same as above with <code>--shrink</code>. <strong>Destructive</strong> — ensure the filesystem inside is small enough first.</td>
+    </tr>
+    <tr>
+      <td class="key">3</td>
+      <td>Change vCPU count</td>
+      <td>Sets maximum then current count with <code>setvcpus --config</code>. Requires VM shut off.</td>
+    </tr>
+    <tr>
+      <td class="key">4</td>
+      <td>Change memory</td>
+      <td><code>setmaxmem --current</code> then <code>setmem --current</code>. Requires VM shut off.</td>
+    </tr>
+    <tr>
+      <td class="key">5</td>
+      <td>Attach a disk</td>
+      <td><code>virsh attach-disk &lt;vm&gt; &lt;path&gt; &lt;target&gt; --current --subdriver qcow2</code></td>
+    </tr>
+    <tr>
+      <td class="key">6</td>
+      <td>Detach a disk</td>
+      <td><code>virsh detach-disk &lt;vm&gt; &lt;path&gt; --current</code></td>
+    </tr>
+    <tr>
+      <td class="key">7</td>
+      <td>Attach a network</td>
+      <td>Builds a temporary interface XML (<code>e1000</code> model, <code>type='network'</code>) and calls <code>virsh attach-device --config</code>.</td>
+    </tr>
+    <tr>
+      <td class="key">8</td>
+      <td>Detach a network</td>
+      <td>Same temporary XML, but with <code>virsh detach-device --config</code>.</td>
+    </tr>
+    <tr><td class="key">q</td><td>Return to VM menu</td><td>Note: returns to the main menu in the current script flow.</td></tr>
+  </tbody>
+</table>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-delete-vm">1.4 Delete a VM (menu 1 → 13)</h3>
+
+<p>
+  Deletes a VM and everything attached to it: DHCP reservation, CD-ROM attachment,
+  all storage volumes, snapshot metadata, SQLite port-forwarding record, and the
+  iptables block in the qemu hook.
+</p>
+
+<h4>Prompts</h4>
+<ul>
+  <li><strong>VM name</strong> — must be shut off; the script aborts if state is <code>running</code>.</li>
+  <li><strong>Confirmation</strong> — you must type <code>DELETE</code> (all caps). Anything else cancels.</li>
+</ul>
+
+<h4>What it does</h4>
+<ol>
+  <li>Refuses to run if the VM is running.</li>
+  <li>Removes the DHCP reservation by matching the VM's MAC and IP in <code>virsh net-dumpxml</code>.</li>
+  <li>Detaches any CD-ROM device (looks for <code>cdrom</code> followed by <code>source file</code> in the XML).</li>
+  <li>Runs <code>virsh undefine &lt;vm&gt; --remove-all-storage --snapshots-metadata</code> — this deletes the qcow2 disks.</li>
+  <li>Removes the block between <code>#&lt;vm&gt;#</code> and <code>###&lt;vm&gt;###</code> in <code>/etc/libvirt/hooks/qemu</code>.</li>
+  <li>Deletes the VM's row from the network's table in <code>bashvm.db</code> if present.</li>
+</ol>
+
+<!-- ==================================================================== -->
+<h2 id="storage">2. Storage Pools</h2>
+
+<div class="command">
+  <code>============================== Manage Storage Pool ==============================
+s. Show all storage pools     1. Show all volumes in a pool  2. Activate a storage pool
+3. Deactivate a storage pool  4. Create a storage pool       5. Delete a storage pool
+6. Create a storage volume    7. Delete a storage volume     8. Clone a storage volume
+9. Download a iso / file      q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>Storage pool sub-menu options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="key">s</td><td><code>virsh pool-list --details</code></td><td>Shows state, autostart, persistence, capacity, allocation, available.</td></tr>
+    <tr><td class="key">1</td><td>List volumes in a pool</td><td><code>virsh vol-list --pool &lt;pool&gt;</code>. Pool must exist.</td></tr>
+    <tr><td class="key">2</td><td>Activate (start) a pool</td><td><code>virsh pool-start</code></td></tr>
+    <tr><td class="key">3</td><td>Deactivate (destroy) a pool</td><td><code>virsh pool-destroy</code> — the definition is kept.</td></tr>
+    <tr><td class="key">4</td><td>Create a new pool</td><td>Prompts for name, type (<code>dir</code>, <code>logical</code>, <code>fs</code>, …) and target path/source. Runs <code>pool-define-as</code>, <code>pool-start</code>, <code>pool-autostart</code>.</td></tr>
+    <tr><td class="key">5</td><td>Delete a pool</td><td><code>pool-destroy</code> then <code>pool-undefine</code>. Aborts if the pool does not exist.</td></tr>
+    <tr><td class="key">6</td><td>Create a qcow2 volume</td><td>Prompts for pool, volume name and capacity (e.g. <code>10G</code>). The <code>.qcow2</code> extension is appended automatically.</td></tr>
+    <tr><td class="key">7</td><td>Delete a volume</td><td><code>virsh vol-delete --pool &lt;pool&gt; &lt;name&gt;.qcow2</code></td></tr>
+    <tr><td class="key">8</td><td>Clone a volume</td><td><code>virsh vol-clone &lt;src&gt;.qcow2 &lt;dst&gt;.qcow2 --pool &lt;pool&gt;</code></td></tr>
+    <tr><td class="key">9</td><td>Download an ISO/file into a pool</td><td>Prompts for URL and pool; derives the filename from the URL; skips if the file already exists; <code>wget --tries=2 --timeout=10</code>.</td></tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Example — create a 20&nbsp;GB volume in the default pool</h3>
+<div class="command">
+  <code>Enter your choice: 6
+Enter the name of the storage pool to use [default]:
+Enter the name of the new storage volume (e.g., new-vm): web-server
+Enter the size of the volume (e.g., 10G): 20G
+Volume 'web-server.qcow2' created</code>
+</div>
+
+<h3>Example — download an ISO</h3>
+<div class="command">
+  <code>Enter your choice: 9
+Enter the full URL to download from (e.g., https://example/image.iso): https://example.org/debian-12.iso
+Enter the storage pool name that the file will download to [default]:
+...wget output...
+You may need to stop and start the pool to see the new image within bashvm
+You can check to see if the file is there at /var/lib/libvirt/images</code>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="networks">3. Networks</h2>
+
+<div class="command">
+  <code>============================================== Manage Network ==============================================
+ s. Show all networks                   1. Show more details of a network   2. Start a network
+ 3. Stop a network                      4. Create a NAT network             5. Create a macvtap network
+ 6. Create a routed IPv4 network        7. Create a routed IPv6 network     8. Delete a network
+ 9. Add a IPv4 reservation             10. Remove a IPv4 reservation       11. Add DHCPv6 to a NAT network
+12. Add a IPv6 reservation             13. Edit a network                   q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>Network sub-menu options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Prompts / Behaviour</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="key">s</td><td><code>virsh net-list --all</code></td><td>Lists every defined network with state and autostart.</td></tr>
+    <tr><td class="key">1</td><td>Network info + current DHCP leases</td><td><code>net-info</code>, <code>net-dhcp-leases</code></td></tr>
+    <tr><td class="key">2</td><td>Start a network and mark it autostart</td><td><code>net-start</code>, <code>net-autostart</code></td></tr>
+    <tr><td class="key">3</td><td>Stop a network</td><td><code>net-destroy</code></td></tr>
+    <tr><td class="key">4</td><td>Create an isolated NAT network</td><td>Name, bridge name, gateway IP, netmask, DHCP start, DHCP end. XML written to <code>/etc/libvirt/qemu/networks/&lt;name&gt;.xml</code>, then defined, started and autostarted.</td></tr>
+    <tr><td class="key">5</td><td>Create a macvtap (bridge-forward) network</td><td>Network name + physical interface (e.g. <code>eth0</code>). VMs appear directly on the physical LAN.</td></tr>
+    <tr><td class="key">6</td><td>Create a routed IPv4 network</td><td>Name, bridge, gateway IPv4, netmask. No NAT, no DHCP — static configuration only. Also attempts to enable <code>net.ipv4.ip_forward</code>.</td></tr>
+    <tr><td class="key">7</td><td>Create a routed IPv6 network</td><td><a href="#hs-ipv6-route">3.3 Create a routed IPv6 network</a></td></tr>
+    <tr><td class="key">8</td><td>Delete a network (optionally drop its SQLite table)</td><td><a href="#hs-delete-network">3.1 Delete a network</a></td></tr>
+    <tr><td class="key">9</td><td>Add a static DHCPv4 reservation</td><td>VM name, MAC, IP, network. Uses <code>virsh net-update … add ip-dhcp-host … --live --config</code>.</td></tr>
+    <tr><td class="key">10</td><td>Remove a DHCPv4 reservation</td><td>Looks up MAC and IP from the network XML by VM name, then deletes the host entry.</td></tr>
+    <tr><td class="key">11</td><td>Add DHCPv6 service to a NAT network</td><td><a href="#hs-dhcpv6">3.2 Add DHCPv6 to a NAT network</a></td></tr>
+    <tr><td class="key">12</td><td>Add a DHCPv6 reservation</td><td>Desired IPv6 address, network name, then the VM's DUID (listed with <code>net-dhcp-leases</code>).</td></tr>
+    <tr><td class="key">13</td><td>Edit a network's XML</td><td><code>virsh net-edit &lt;name&gt;</code></td></tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Example — create a NAT network</h3>
+<div class="command">
+  <code>Enter your choice: 4
+Enter the new network name (e.g., natbr0): natbr0
+Enter the virtual bridge name (e.g., natbr0): natbr0
+Enter the new gateway ip address (e.g., 192.168.100.1): 192.168.100.1
+Enter the new subnet mask (e.g., 255.255.255.0): 255.255.255.0
+Enter the starting ip for the DHCP range (e.g., 192.168.100.2): 192.168.100.2
+Enter the ending ip for the DHCP range (e.g., 192.168.100.254): 192.168.100.254
+Network natbr0 defined from /etc/libvirt/qemu/networks/natbr0.xml
+Network natbr0 started
+Network natbr0 marked as autostart</code>
+</div>
+
+<h3>Example — reserve an IP for a VM</h3>
+<div class="command">
+  <code>Enter your choice: 9
+Enter the virtual machines name: web-server
+Enter the virtual machines mac address: 52:54:00:aa:bb:cc
+Enter the new ip address for the virtual machine: 192.168.100.50
+Enter the network name [default]:
+Setting DHCP reservation...
+You may need to start / stop the vm for the changes to take effect</code>
+</div>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-delete-network">3.1 Delete a network (menu 3 → 8)</h3>
+
+<p>
+  Deletes a libvirt network and, optionally, its associated table in
+  <code>bashvm.db</code>.
+</p>
+
+<h4>Prompts</h4>
+<ul>
+  <li><strong>Network name</strong> to delete.</li>
+  <li><strong>Delete the SQLite table and data? (y/n)</strong> — accepts <code>y</code>, <code>ye</code>, or <code>yes</code> (case-insensitive).</li>
+</ul>
+
+<h4>What it does</h4>
+<ol>
+  <li>If confirmed, drops the table <code>&lt;network&gt;_table</code> from <code>bashvm.db</code> (only if it exists).</li>
+  <li>Runs <code>virsh net-destroy &lt;network&gt;</code> then <code>virsh net-undefine &lt;network&gt;</code>.</li>
+</ol>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-dhcpv6">3.2 Add DHCPv6 to a NAT network (menu 3 → 11)</h3>
+
+<p>
+  Adds DHCPv6 service to an existing <strong>NAT</strong> network. The script refuses to
+  run on non-NAT networks.
+</p>
+
+<h4>Prompts</h4>
+<table>
+  <thead>
+    <tr><th>Prompt</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Network name</td><td>Default <code>default</code>. Must be a NAT network.</td></tr>
+    <tr><td>Main interface name</td><td>e.g. <code>eth0</code> — the host's uplink for ndppd proxying</td></tr>
+    <tr><td>IPv6 gateway address</td><td>e.g. <code>fd00::1</code> or a globally routed prefix</td></tr>
+    <tr><td>Prefix length</td><td>e.g. <code>64</code></td></tr>
+    <tr><td>Starting range</td><td>e.g. <code>fd00::2</code></td></tr>
+    <tr><td>Ending range</td><td>e.g. <code>fd00::300</code></td></tr>
+  </tbody>
+</table>
+
+<h4>What it does</h4>
+<ol>
+  <li>Aborts if <code>virsh net-dumpxml</code> does not contain <code>&lt;forward mode='nat'&gt;</code>.</li>
+  <li>Aborts if the network XML already contains <code>ipv6</code> — you must remove the existing DHCPv6 config first.</li>
+  <li>Adds <code>net.ipv6.conf.&lt;iface&gt;.accept_ra = 2</code> to <code>/etc/sysctl.conf</code> if not present, runs <code>sysctl -p</code>, and creates a systemd unit <code>bashvm-ipv6-accept-ra.service</code> to re-apply on boot.</li>
+  <li>Strips the closing <code>&lt;/ip&gt;</code> and <code>&lt;/network&gt;</code> tags from the network XML with <code>sed</code> and appends a new IPv6 <code>&lt;ip&gt;</code> block with a <code>&lt;dhcp&gt;</code> range.</li>
+  <li>Stops, redefines, starts, and autostarts the network.</li>
+  <li>Writes <code>/etc/ndppd.conf</code> with a proxy rule for the configured prefix and enables/restarts <code>ndppd</code>.</li>
+</ol>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-ipv6-route">3.3 Create a routed IPv6 network (menu 3 → 7)</h3>
+
+<p>
+  Creates a <strong>routed</strong> (non-NAT, no DHCP) IPv6 network. Useful for static
+  IPv6 addressing on guests where you control the upstream routing.
+</p>
+
+<h4>Prompts</h4>
+<table>
+  <thead>
+    <tr><th>Prompt</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>New network name</td><td>Must not already exist — the script validates with <code>virsh net-info</code></td></tr>
+    <tr><td>Main physical interface</td><td>e.g. <code>eth0</code> — used for <code>accept_ra</code> and ndppd</td></tr>
+    <tr><td>IPv6 network address</td><td>e.g. <code>2001:db8::</code> — this address is the gateway for guests</td></tr>
+    <tr><td>IPv6 prefix length</td><td>e.g. <code>64</code></td></tr>
+  </tbody>
+</table>
+
+<h4>What it does</h4>
+<ol>
+  <li>Aborts if a network with that name already exists.</li>
+  <li>Adds <code>net.ipv6.conf.&lt;iface&gt;.accept_ra = 2</code> to <code>/etc/sysctl.conf</code> if not already present, applies it, and creates the same <code>bashvm-ipv6-accept-ra.service</code> persistence unit.</li>
+  <li>Generates a network XML with <code>&lt;forward mode='route'/&gt;</code> and a random bridge name in the form <code>virbrNNN</code> (three random digits).</li>
+  <li>Defines, starts, and autostarts the network.</li>
+  <li>Writes <code>/etc/ndppd.conf</code> with a proxy rule for the chosen prefix and enables/restarts <code>ndppd</code>.</li>
+</ol>
+
+<!-- ==================================================================== -->
+<h2 id="snapshots">4. Snapshots</h2>
+
+<div class="command">
+  <code>========================= Manage Snapshot =========================
+s. Show all snapshots of a VM  1. Create a snapshot  2. Delete a snapshot
+3. Revert to a snapshot        q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>Snapshot sub-menu options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Command</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="key">s</td><td>List snapshots for a VM</td><td><code>virsh snapshot-list &lt;vm&gt;</code></td></tr>
+    <tr><td class="key">1</td><td>Create a named snapshot</td><td><code>virsh snapshot-create-as &lt;vm&gt; &lt;name&gt;</code></td></tr>
+    <tr><td class="key">2</td><td>Delete a snapshot</td><td><code>virsh snapshot-delete &lt;vm&gt; &lt;name&gt;</code></td></tr>
+    <tr><td class="key">3</td><td>Revert the VM to a snapshot</td><td><code>virsh snapshot-revert &lt;vm&gt; &lt;name&gt;</code></td></tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Example</h3>
+<div class="command">
+  <code>Enter your choice: 1
+Enter the name of the virtual machine: web-server
+ Name                 Creation Time               State
+------------------------------------------------------------
+ pre-upgrade          2025-01-14 09:12:03 +0000   shutoff
+
+Enter the name for the new snapshot: post-upgrade
+Domain snapshot post-upgrade created</code>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="edit">5. Edit Properties</h2>
+
+<div class="command">
+  <code>====================== Edit Properties ======================
+1. Edit a VM        2. Edit a storage pool  3. Edit a network
+4. Edit a snapshot  q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>XML editing options</caption>
+  <thead>
+    <tr><th>Key</th><th>Target</th><th>Command</th><th>Prompts</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="key">1</td><td>VM definition</td><td><code>virsh edit &lt;vm&gt;</code></td><td>VM name</td></tr>
+    <tr><td class="key">2</td><td>Storage pool definition</td><td><code>virsh pool-edit &lt;pool&gt;</code></td><td>Pool name (default: <code>default</code>)</td></tr>
+    <tr><td class="key">3</td><td>Network definition</td><td><code>virsh net-edit &lt;net&gt;</code></td><td>Network name (default: <code>default</code>)</td></tr>
+    <tr><td class="key">4</td><td>Snapshot metadata</td><td><code>virsh snapshot-edit --snapshotname &lt;s&gt; --domain &lt;vm&gt;</code></td><td>VM name, snapshot name</td></tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<!-- ==================================================================== -->
+<h2 id="firewall">6. Firewall Settings</h2>
+
+<div class="command">
+  <code>===================== Firewall Settings =====================
+s. Show ufw status  1. Show listening ports   2. Allow port range
+3. Deny port range  4. Allow single port      5. Deny single port
+6. Delete a rule    7. Enable and reload ufw  8. Disable and reset ufw
+q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>Firewall (ufw) options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Command</th><th>Prompts</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="key">s</td><td>Numbered ufw rule list</td><td><code>ufw status numbered</code></td><td>none</td></tr>
+    <tr><td class="key">1</td><td>Listening TCP/UDP sockets</td><td><code>netstat -l | grep "tcp\|udp"</code></td><td>none</td></tr>
+    <tr><td class="key">2</td><td>Allow a port range on TCP and UDP</td><td><code>ufw allow START:END/tcp</code> + <code>/udp</code>, then <code>ufw reload</code></td><td>Start port, end port</td></tr>
+    <tr><td class="key">3</td><td>Deny a port range on TCP and UDP</td><td><code>ufw deny START:END/tcp</code> + <code>/udp</code>, then <code>ufw reload</code></td><td>Start port, end port</td></tr>
+    <tr><td class="key">4</td><td>Allow a single port</td><td><code>ufw allow &lt;port&gt;</code>, <code>ufw reload</code></td><td>Port</td></tr>
+    <tr><td class="key">5</td><td>Deny a single port</td><td><code>ufw deny &lt;port&gt;</code>, <code>ufw reload</code></td><td>Port</td></tr>
+    <tr><td class="key">6</td><td>Delete a rule by number</td><td><code>ufw delete &lt;n&gt;</code>, <code>ufw reload</code></td><td>Rule number (see <kbd>s</kbd> first)</td></tr>
+    <tr><td class="key">7</td><td>Enable the firewall and reload rules</td><td><code>ufw enable</code>, <code>ufw reload</code></td><td>none</td></tr>
+    <tr><td class="key">8</td><td>Disable the firewall and wipe all rules</td><td><code>ufw disable</code>, <code>ufw reset</code></td><td>Confirmation (ufw asks)</td></tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Example — open a port range for a web stack</h3>
+<div class="command">
+  <code>Enter your choice: 2
+Enter starting port: 8000
+Enter ending port: 8100
+Rules updated
+Rules updated (v6)
+Firewall reloaded</code>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="portforward">7. Port Forwarding</h2>
+
+<div class="command">
+  <code>==================================== Manage Port Forwarding ====================================
+s. Show port forwarding rules        1. List DHCP leases from a network  2. Add port forwarding to a VM
+3. Remove port forwarding from a VM  4. Edit port forwarding rule file   q. Back to main menu</code>
+</div>
+
+<p>
+  Port forwarding for VMs behind a NAT network is implemented with the libvirt
+  <strong>qemu hook</strong> at <code>/etc/libvirt/hooks/qemu</code>. When a VM starts,
+  the hook adds <code>iptables</code> DNAT rules; when it stops, they are removed.
+  Forwarding records are also stored in the SQLite database <code>bashvm.db</code>.
+</p>
+
+<table>
+  <caption>Port forwarding options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Details</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="key">s</td>
+      <td>Show current NAT rules</td>
+      <td>Runs <code>iptables -t nat -L -n -v</code> and then <a href="#hs-show-port-forwarding">7.3 Show port forwarding rules</a> to dump all tables in <code>bashvm.db</code>.</td>
+    </tr>
+    <tr>
+      <td class="key">1</td>
+      <td>List DHCP leases on a network</td>
+      <td><code>virsh net-dhcp-leases &lt;network&gt;</code> — use this to find the VM's IP before forwarding to it.</td>
+    </tr>
+    <tr>
+      <td class="key">2</td>
+      <td>Add a forwarding rule to a VM</td>
+      <td><a href="#hs-add-port-forwarding">7.1 Add port forwarding to a VM</a></td>
+    </tr>
+    <tr>
+      <td class="key">3</td>
+      <td>Remove a forwarding rule from a VM</td>
+      <td><a href="#hs-remove-port-forwarding">7.2 Remove port forwarding from a VM</a></td>
+    </tr>
+    <tr>
+      <td class="key">4</td>
+      <td>Edit the hook script directly</td>
+      <td>Opens <code>/etc/libvirt/hooks/qemu</code> in <code>nano</code> (falls back to <code>vim</code>).</td>
+    </tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Typical port-forwarding workflow</h3>
+<ol>
+  <li><kbd>1</kbd> — list DHCP leases to confirm the guest's IP address.</li>
+  <li><kbd>2</kbd> — add the forwarding rule (host port → guest IP:guest port).</li>
+  <li>Restart the VM so the <code>qemu</code> hook runs.</li>
+  <li><kbd>s</kbd> — verify the DNAT rule appears in the NAT table.</li>
+  <li><kbd>3</kbd> — remove the rule when it is no longer needed.</li>
+</ol>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-add-port-forwarding">7.1 Add port forwarding to a VM (menu 7 → 2)</h3>
+
+<p>
+  Adds a new port-forwarding rule set for a VM behind a NAT network. The first port in
+  the range is reserved for SSH (forwarded to guest port 22); the remaining ports are
+  forwarded 1:1 to the same guest port numbers.
+</p>
+
+<h4>Prompts</h4>
+<table>
+  <thead>
+    <tr><th>Prompt</th><th>Validation</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>VM name</td><td>Must be non-empty</td></tr>
+    <tr><td>IP of the VM</td><td>Must match <code>x.x.x.x</code></td></tr>
+    <tr><td>Start port range</td><td>Numeric; becomes the SSH port</td></tr>
+    <tr><td>Ending port</td><td>Numeric, ≥ start port</td></tr>
+  </tbody>
+</table>
+
+<h4>What it does</h4>
+<ol>
+  <li>Resolves the VM's network and bridge name from <code>virsh dumpxml</code> / <code>virsh net-dumpxml</code> (defaults to <code>default</code> / <code>virbr0</code>).</li>
+  <li>Validates that the IP, start port, and end port are well-formed and ordered.</li>
+  <li>Creates <code>bashvm.db</code> and the network's table if missing.</li>
+  <li>Rejects the request if the VM name or IP already exists in the table, or if any of the three ports is not strictly greater than the highest port already recorded.</li>
+  <li>Inserts <code>(vm_name, ipv4, ssh_port, start_port, end_port)</code> into the table.</li>
+  <li>Appends a block to <code>/etc/libvirt/hooks/qemu</code> between <code>#&lt;vm&gt;#</code> and <code>###&lt;vm&gt;###</code> markers, containing <code>iptables</code> delete rules for the <code>stopped</code>/<code>reconnect</code> branch and insert rules for the <code>start</code>/<code>reconnect</code> branch. Both TCP and UDP are covered for SSH and every port in the range.</li>
+  <li>Makes the hook executable and restarts <code>libvirtd</code> if it was the only running VM.</li>
+  <li>Prints the SSH port and the forwarded port range.</li>
+</ol>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-remove-port-forwarding">7.2 Remove port forwarding from a VM (menu 7 → 3)</h3>
+
+<p>
+  Removes a VM's port-forwarding rule set from both <code>bashvm.db</code> and
+  <code>/etc/libvirt/hooks/qemu</code>.
+</p>
+
+<h4>Prompts</h4>
+<ul>
+  <li><strong>VM name</strong> — must be non-empty.</li>
+</ul>
+
+<h4>What it does</h4>
+<ol>
+  <li>Resolves the network and bridge (defaults <code>default</code> / <code>virbr0</code>).</li>
+  <li>Aborts if <code>bashvm.db</code> does not exist.</li>
+  <li>Aborts if the VM has no row in the network's table.</li>
+  <li>Aborts if the hook file contains no reference to the VM.</li>
+  <li>Deletes the row from the table.</li>
+  <li>Removes the block between <code>#&lt;vm&gt;#</code> and <code>###&lt;vm&gt;###</code> from the hook.</li>
+</ol>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-show-port-forwarding">7.3 Show port forwarding rules (menu 7 → s)</h3>
+
+<p>
+  Dumps every table in <code>bashvm.db</code> with column headers. Used by the
+  port-forwarding menu to give a human-readable view of all reserved ports.
+</p>
+
+<h4>What it does</h4>
+<ol>
+  <li>Lists all tables from <code>sqlite_master</code>.</li>
+  <li>For each table, prints the table name and then <code>SELECT *</code> with
+  <code>-column -header</code> formatting.</li>
+</ol>
+
+<div class="command">
+  <code>table: default_table
+vm_name      ipv4             ssh_port  start_port  end_port
+-----------  ---------------  --------  ----------  --------
+web-server   192.168.122.50   49152     49153       49172
+db-server    192.168.122.51   49173     49174       49193</code>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="vnc">8. VNC / Console Access</h2>
+
+<div class="command">
+  <code>======================== VNC / Console Access ========================
+s. Show assigned VNC ports  1. Add VNC port with password  2. Remove VNC port
+3. Console into a vm        q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>VNC / console options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Details</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="key">s</td>
+      <td>Show VNC port per VM</td>
+      <td>Iterates over all VMs, reports <code>not running</code> for stopped domains, otherwise maps the VNC display number <em>N</em> to TCP port <code>5900 + N</code>, or shows <code>none</code> if VNC is not configured.</td>
+    </tr>
+    <tr>
+      <td class="key">1</td>
+      <td>Add VNC access with a password</td>
+      <td>Prompts for VM name and password, then rewrites the VM XML to inject a full device block: QEMU guest agent channel, USB tablet, PS/2 mouse and keyboard, <code>&lt;graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0' passwd='…'&gt;</code>, ICH9 sound, QXL video, virtio balloon and virtio RNG. Redefines the domain.</td>
+    </tr>
+    <tr>
+      <td class="key">2</td>
+      <td>Remove VNC access</td>
+      <td>Rewrites the XML with the same device block but <em>without</em> the <code>&lt;graphics&gt;</code> element, removing the VNC listener.</td>
+    </tr>
+    <tr>
+      <td class="key">3</td>
+      <td>Open a serial console</td>
+      <td><code>virsh console &lt;vm&gt;</code> — exit with <kbd>Ctrl</kbd>+<kbd>]</kbd>.</td>
+    </tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Example — check ports</h3>
+<div class="command">
+  <code>Enter your choice: s
+
+VM: web-server, VNC Port: 5901
+
+db-server is not running (state: shut off)
+
+VM: test-vm, VNC Port: none</code>
+</div>
+
+<h3>Connecting</h3>
+<div class="command">
+  <code># from your workstation
+vncviewer 192.0.2.10:5901</code>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="sysmon">9. System Monitor</h2>
+
+<p>
+  Selecting <kbd>9</kbd> immediately launches <strong><code>btop</code></strong> — a
+  full-screen terminal resource monitor showing CPU, memory, disks, network, and
+  processes for the <em>host</em>.
+</p>
+
+<div class="command">
+  <code>Enter your choice: 9
+# btop opens full screen; press q to quit and return to the BashVM main menu</code>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="vmmon">10. VM Monitor</h2>
+
+<div class="command">
+  <code>==================================== VM Monitor ====================================
+s. Show all virtual machines  1. VCPU usage of a VM     2. Memory usage of a VM
+3. Disk usage of a VM         4. Network usage of a VM  5. All usage metrics of a VM
+q. Back to main menu</code>
+</div>
+
+<table>
+  <caption>VM monitoring options</caption>
+  <thead>
+    <tr><th>Key</th><th>Metric</th><th>Method</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="key">s</td><td>VM inventory</td><td><code>virsh list --all</code></td></tr>
+    <tr>
+      <td class="key">1</td>
+      <td>Per-vCPU utilisation</td>
+      <td>Reads <code>vcpu.N.time</code> from <code>virsh domstats</code>, sleeps 1&nbsp;s, reads again, divides the delta by the elapsed time, and prints a percentage for each vCPU.</td>
+    </tr>
+    <tr>
+      <td class="key">2</td>
+      <td>Memory utilisation</td>
+      <td>Ratio of <code>balloon.rss</code> to <code>balloon.rss + balloon.available</code> from <code>virsh domstats</code>.</td>
+    </tr>
+    <tr>
+      <td class="key">3</td>
+      <td>Disk utilisation of the guest filesystem</td>
+      <td><code>virsh guestinfo</code> fields <code>fs.0.used</code> / <code>fs.0.total</code>.</td>
+    </tr>
+    <tr>
+      <td class="key">4</td>
+      <td>Network throughput</td>
+      <td>Finds the VM's vNIC with <code>virsh domiflist</code>, then <code>ifstat -i &lt;iface&gt; 1 1</code>.</td>
+    </tr>
+    <tr>
+      <td class="key">5</td>
+      <td>Combined metrics dashboard</td>
+      <td><a href="#hs-monitor">10.1 All usage metrics of a VM</a> — runs all of the above in one pass.</td>
+    </tr>
+    <tr><td class="key">q</td><td>Return to main menu</td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Example — per-vCPU usage</h3>
+<div class="command">
+  <code>Enter your choice: 1
+Enter the name of the VM: web-server
+CPU 0 Usage: 12.43%
+CPU 1 Usage: 3.07%</code>
+</div>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-monitor">10.1 All usage metrics of a VM (menu 10 → 5)</h3>
+
+<p>
+  Combined per-VM metrics dashboard. Equivalent to running options 1–4 of the VM Monitor
+  menu in sequence for a single VM.
+</p>
+
+<h4>Prompts</h4>
+<ul>
+  <li><strong>VM name</strong> — validated with <code>virsh dominfo</code>; invalid names exit silently.</li>
+</ul>
+
+<h4>What it reports</h4>
+<ol>
+  <li><strong>Per-vCPU utilisation</strong> — loops from vCPU 0 to <code>count-1</code>, sleeping 1&nbsp;s between <code>domstats</code> reads and normalising by <code>10⁹ ns</code>.</li>
+  <li><strong>Memory usage</strong> — <code>balloon.rss / (balloon.rss + balloon.available) × 100</code>.</li>
+  <li><strong>Disk usage</strong> — <code>fs.0.used / fs.0.total × 100</code> from <code>virsh guestinfo</code>.</li>
+  <li><strong>Network throughput</strong> — <code>ifstat -i &lt;vNIC&gt; 1 1</code>.</li>
+</ol>
+
+<div class="command">
+  <code>Enter the VM name: web-server
+CPU 0 Usage: 12.43%
+CPU 1 Usage: 3.07%
+
+Memory Usage: 41.20%
+
+Disk Usage: 58.71%
+
+      eth0
+ KB/s in  KB/s out
+    0.00      0.00</code>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="sqlite">11. SQLite Editor</h2>
+
+<p>
+  The SQLite Editor provides menu-driven access to the per-network tables in
+  <code>bashvm.db</code> (typically holding VM name, IPv4 address, SSH port, and a port
+  range used for port-forwarding bookkeeping). The main script's option
+  <kbd>11</kbd> simply launches this editor.
+</p>
+
+<div class="command">
+  <code>Enter your choice: 11
+# The SQLite editor takes over; quit it to return to the main menu</code>
+</div>
+
+<h3>Startup prompts</h3>
+<ul>
+  <li><strong>Network name</strong> — validated against <code>virsh net-list --all</code>. Repeats until a real network is entered. Defaults to <code>default</code>.</li>
+</ul>
+
+<p>The chosen network's table is created if it does not already exist.</p>
+
+<h3>Editor menu</h3>
+<div class="command">
+  <code>============================ SQLite Editor Menu ============================
+s. View all entries  1. Add new VM entry      2. Delete VM entry
+3. Update VM entry   4. Delete current table  q. Exit</code>
+</div>
+
+<table>
+  <caption>SQLite editor options</caption>
+  <thead>
+    <tr><th>Key</th><th>Action</th><th>Details</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="key">s</td>
+      <td>View all entries</td>
+      <td>Column-aligned table with headers, ordered by <code>vm_name</code>.</td>
+    </tr>
+    <tr>
+      <td class="key">1</td>
+      <td>Add VM entry</td>
+      <td>Prompts for VM name (non-empty), IPv4 (validated <code>x.x.x.x</code>), SSH port, start port, end port. Ports accept blank for <code>NULL</code>; non-numeric input is rejected.</td>
+    </tr>
+    <tr>
+      <td class="key">2</td>
+      <td>Delete VM entry</td>
+      <td>Confirms the row exists before deleting.</td>
+    </tr>
+    <tr>
+      <td class="key">3</td>
+      <td>Update VM entry</td>
+      <td>Choose field 1–4 (IPv4, SSH port, start port, end port); validators re-run for the new value.</td>
+    </tr>
+    <tr>
+      <td class="key">4</td>
+      <td>Delete current table</td>
+      <td>Drops the whole table. Requires a <code>y</code>/<code>yes</code> confirmation. <strong>Cannot be undone.</strong></td>
+    </tr>
+    <tr><td class="key">q</td><td>Exit</td><td>Returns to the main menu.</td></tr>
+  </tbody>
+</table>
+
+<!-- ==================================================================== -->
+<h2 id="install-uninstall">12. Installation &amp; Uninstallation</h2>
+
+<p>
+  Two standalone scripts handle first-time setup and complete removal of the packages
+  used by BashVM. They are <em>not</em> invoked from the main menu; run them directly
+  from the shell before the first <code>bashvm.sh</code> launch (installer) or when
+  decommissioning the host (uninstaller).
+</p>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-installer">12.1 Installer (run first)</h3>
+
+<p>
+  A fully automated setup script for Debian/Ubuntu hosts. Installs every package BashVM
+  needs, initializes the default storage pool and network, and configures VNC over TLS.
+  It does <strong>not</strong> prompt for input.
+</p>
+
+<h4>Running</h4>
+<div class="command">
+  <code>chmod +x bashvm-installer.sh
+sudo ./bashvm-installer.sh</code>
+</div>
+
+<h4>Packages installed</h4>
+<ul>
+  <li><code>qemu-kvm</code>, <code>libvirt-daemon-system</code>, <code>libvirt-clients</code>, <code>qemu-utils</code></li>
+  <li><code>bridge-utils</code>, <code>net-tools</code>, <code>dnsmasq</code> (only if not already present)</li>
+  <li><code>virt-manager</code>, <code>cloud-init</code></li>
+  <li><code>ufw</code>, <code>btop</code>, <code>bc</code>, <code>ifstat</code>, <code>ndppd</code>, <code>sqlite3</code></li>
+</ul>
+
+<h4>What it does</h4>
+<ol>
+  <li>Installs every package with <code>apt install -y</code> and exits on the first failure.</li>
+  <li>Starts and enables <code>libvirtd</code> if it is not already active.</li>
+  <li>Defines, starts, and autostarts the <code>default</code> storage pool at <code>/var/lib/libvirt/images</code> if missing or inactive.</li>
+  <li>Defines, starts, and autostarts the <code>default</code> network if missing or inactive.</li>
+  <li>Generates a TLS CA and server certificate in <code>/etc/pki/libvirt-vnc</code>:
+    <ul>
+      <li><code>ca-cert.pem</code>, <code>ca-key.pem</code> (CA)</li>
+      <li><code>server-cert.pem</code>, <code>server-key.pem</code> (server, with all detected IPv4/IPv6 addresses in the SAN)</li>
+      <li>10-year validity, private keys chmod 600</li>
+    </ul>
+  </li>
+  <li>Backs up <code>/etc/libvirt/qemu.conf</code> to a timestamped <code>.bak</code> file, then sets:
+    <ul>
+      <li><code>vnc_tls = 1</code></li>
+      <li><code>vnc_tls_x509_cert_dir = "/etc/pki/libvirt-vnc"</code></li>
+    </ul>
+  </li>
+  <li>Restarts <code>libvirtd</code> if no VMs are currently running. If VMs are running, it prints the restart command and a warning instead.</li>
+  <li>Prints the final hint: <em>"If no errors above then you can run bashvm with <code>bash bashvm.sh</code>"</em>.</li>
+</ol>
+
+<!-- -------------------------------------------------------------------- -->
+<h3 id="hs-uninstaller">12.2 Uninstaller (destructive)</h3>
+
+<p>
+  Removes every package that the installer would have installed. It does not touch
+  user data (VM disks, <code>bashvm.db</code>, network XML, or the qemu hook) — those
+  are left for you to remove manually.
+</p>
+
+<h4>Running</h4>
+<div class="command">
+  <code>chmod +x bashvm-uninstaller.sh
+sudo ./bashvm-uninstaller.sh</code>
+</div>
+
+<h4>Prompts</h4>
+<ul>
+  <li>The script prints a warning that it will remove BashVM's packages.</li>
+  <li>You must type <code>remove</code> (case-insensitive) to proceed, or <code>cancel</code> to exit. Any other input re-prompts.</li>
+</ul>
+
+<h4>What it does</h4>
+<ol>
+  <li>Removes each package with <code>apt remove -y</code> and exits on the first failure:
+    <code>qemu-kvm</code>, <code>libvirt-daemon-system</code>, <code>libvirt-clients</code>,
+    <code>bridge-utils</code>, <code>qemu-utils</code>, <code>virt-manager</code>,
+    <code>cloud-init</code>, <code>net-tools</code>, <code>ufw</code>, <code>btop</code>,
+    <code>bc</code>, <code>ifstat</code>, <code>ndppd</code>, <code>sqlite3</code>.
+  </li>
+  <li>Runs <code>apt autoremove -y</code> to clean up now-orphaned dependencies.</li>
+  <li>Prints a completion message.</li>
+</ol>
+
+<!-- ==================================================================== -->
+<h2 id="workflows">Common Workflows</h2>
+
+<h3>First-time host setup</h3>
+<ol>
+  <li><strong>12.1</strong> — run the installer to install packages and configure VNC TLS.</li>
+  <li>Confirm <code>systemctl status libvirtd</code> is active.</li>
+  <li><strong>1 → 1</strong> — list VMs (should be empty).</li>
+  <li><strong>2 → s</strong> — confirm the <code>default</code> pool is active.</li>
+  <li><strong>3 → s</strong> — confirm the <code>default</code> network is active.</li>
+</ol>
+
+<h3>Create a new VM from scratch (ISO install)</h3>
+<ol>
+  <li><strong>2 → 9</strong> — download the installation ISO into the <code>default</code> pool (or let <a href="#hs-create-vm">1.1 Create a new / existing VM</a> do it).</li>
+  <li><strong>2 → 6</strong> — create a qcow2 volume for the VM's disk.</li>
+  <li><strong>1 → 8</strong> — create the VM definition interactively.</li>
+  <li><strong>1 → 11</strong> — console in to run the installer, or use VNC (menu 8).</li>
+  <li><strong>1 → 6</strong> — enable autostart so it comes back after a host reboot.</li>
+</ol>
+
+<h3>Deploy a cloud-image VM in one step</h3>
+<ol>
+  <li><strong>1 → 10</strong> — <a href="#hs-create-auto-vm">1.2 Create a new VM (Automated)</a> handles download, cloud-init, DHCP reservation, and port forwarding.</li>
+  <li>Note the printed IPv4, SSH port, username, and password.</li>
+  <li><strong>1 → 11</strong> — console in to verify the guest is healthy.</li>
+  <li><strong>7 → s</strong> — confirm the forwarding rules landed in the hook.</li>
+</ol>
+
+<h3>Duplicate an existing VM</h3>
+<ol>
+  <li><strong>1 → 4</strong> — gracefully shut down the source VM (important: <code>virt-clone</code> needs a consistent disk).</li>
+  <li><strong>1 → 14</strong> — clone to a new name (or <strong>1 → 15</strong> for several copies).</li>
+  <li><strong>1 → 2</strong> — start the clone.</li>
+  <li><strong>8 → 1</strong> — add a VNC password if you need graphical access.</li>
+</ol>
+
+<h3>Expose a guest web server to the LAN</h3>
+<ol>
+  <li><strong>3 → 4</strong> — make sure the VM sits on a NAT network with a known subnet.</li>
+  <li><strong>3 → 9</strong> — reserve a fixed IP for the VM's MAC address.</li>
+  <li><strong>7 → 1</strong> — confirm the guest picked up the reserved lease.</li>
+  <li><strong>7 → 2</strong> — forward host port 8080 to <code>&lt;guest-ip&gt;:80</code>.</li>
+  <li><strong>6 → 4</strong> — allow port 8080 through ufw.</li>
+  <li><strong>7 → s</strong> — verify the DNAT rule is present.</li>
+</ol>
+
+<h3>Roll back a risky change</h3>
+<ol>
+  <li><strong>4 → 1</strong> — snapshot the VM <em>before</em> the change.</li>
+  <li>Apply the change.</li>
+  <li><strong>4 → 3</strong> — revert to the snapshot if something breaks.</li>
+  <li><strong>4 → 2</strong> — clean up the snapshot when you are happy.</li>
+</ol>
+
+<h3>Add DHCPv6 to an existing NAT network</h3>
+<ol>
+  <li>Back up the network XML: <code>cp /etc/libvirt/qemu/networks/default.xml ~/default.xml.bak</code>.</li>
+  <li><strong>3 → 11</strong> — run <a href="#hs-dhcpv6">3.2 Add DHCPv6 to a NAT network</a> and supply the interface, gateway, prefix, and range.</li>
+  <li>Verify with <code>virsh net-dumpxml default | grep ipv6</code>.</li>
+  <li>Restart guest VMs so they pick up a DHCPv6 address.</li>
+</ol>
+
+<h3>Delete a VM completely</h3>
+<ol>
+  <li><strong>1 → 4</strong> — graceful shutdown (or <strong>1 → 5</strong> to force).</li>
+  <li><strong>1 → 13</strong> — <a href="#hs-delete-vm">1.4 Delete a VM</a>; type <code>DELETE</code> to confirm.</li>
+  <li>Check the network no longer has a reservation: <strong>3 → 1</strong>.</li>
+  <li>Check the hook no longer has a block: <strong>7 → 4</strong> and search for the VM name.</li>
+</ol>
+
+<h3>Decommission a host</h3>
+<ol>
+  <li>Back up <code>bashvm.db</code>, network XML, and the qemu hook.</li>
+  <li><strong>12.2</strong> — run the uninstaller; type <code>remove</code> to confirm.</li>
+  <li>Manually remove user data left behind (VM disks, <code>/etc/pki/libvirt-vnc</code>, etc.).</li>
+</ol>
+
+<!-- ==================================================================== -->
+<h2 id="troubleshooting">Troubleshooting &amp; Notes</h2>
+
+<table>
+  <caption>Common issues and resolutions</caption>
+  <thead>
+    <tr><th>Symptom</th><th>Likely cause</th><th>Resolution</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>command not found: bashvm-*.sh</code></td>
+      <td>Helper scripts are not in the working directory or on <code>PATH</code>.</td>
+      <td>Run the main script from the directory containing all helper scripts, or add that directory to <code>PATH</code>.</td>
+    </tr>
+    <tr>
+      <td><code>error: failed to connect to the hypervisor</code></td>
+      <td><code>libvirtd</code> not running, or the script is not run as root / not in the <code>libvirt</code> group.</td>
+      <td>Run <a href="#hs-installer">12.1 Installer</a>, or <code>sudo systemctl enable --now libvirtd</code>, then run as root.</td>
+    </tr>
+    <tr>
+      <td><code>No pool with this name was found</code></td>
+      <td>The pool name typed does not exist.</td>
+      <td>Press <kbd>s</kbd> in the storage menu to see exact pool names; remember the prompt defaults to <code>default</code> on an empty line.</td>
+    </tr>
+    <tr>
+      <td><code>Please shutdown the vm before running this again</code></td>
+      <td>Undefine (1 → 9) or delete (1 → 13) was attempted against a running VM.</td>
+      <td>Shut it down with 1 → 4 (graceful) or 1 → 5 (force), then retry.</td>
+    </tr>
+    <tr>
+      <td>Disk usage shows errors or blank values</td>
+      <td><code>virsh guestinfo</code> returns nothing.</td>
+      <td>Install and start <code>qemu-guest-agent</code> inside the guest.</td>
+    </tr>
+    <tr>
+      <td>Downloaded ISO not visible in BashVM</td>
+      <td>Pool metadata not refreshed.</td>
+      <td>Deactivate and reactivate the pool (2 → 3 then 2 → 2), then list volumes with 2 → 1.</td>
+    </tr>
+    <tr>
+      <td>Port forward has no effect</td>
+      <td><code>qemu</code> hook missing, not executable, or the VM was not restarted.</td>
+      <td>Check <code>/etc/libvirt/hooks/qemu</code> (7 → 4), <code>chmod +x</code> it, restart the VM, verify with 7 → s.</td>
+    </tr>
+    <tr>
+      <td><code>ssh_port, start_port and end_port must all be higher…</code></td>
+      <td>New rule set overlaps or undercuts an existing range in <code>bashvm.db</code>.</td>
+      <td>Use higher port numbers, or inspect/clean the table via menu 11.</td>
+    </tr>
+    <tr>
+      <td><code>The vm name 'x' already exists in the database</code></td>
+      <td>A port-forwarding record already exists for that VM.</td>
+      <td>Remove it with 7 → 3 first, or choose a different VM name.</td>
+    </tr>
+    <tr>
+      <td><code>This function only works on NAT networks currently</code></td>
+      <td><a href="#hs-dhcpv6">3.2 Add DHCPv6 to a NAT network</a> was run against a routed or macvtap network.</td>
+      <td>Create or select a NAT network first (menu 3 → 4).</td>
+    </tr>
+    <tr>
+      <td>VNC TLS connection fails after installer</td>
+      <td>The VNC client is not configured for TLS, or does not trust the generated CA.</td>
+      <td>Configure the client to use TLS and import <code>/etc/pki/libvirt-vnc/ca-cert.pem</code>. Existing VMs need a stop/start before the new qemu.conf settings apply.</td>
+    </tr>
+    <tr>
+      <td>VM will not start after editing XML</td>
+      <td>Invalid device addresses or duplicate MACs introduced via menu 5.</td>
+      <td>Restore from a <code>virsh dumpxml</code> backup or re-run <code>virsh edit</code> to correct the offending element.</td>
+    </tr>
+    <tr>
+      <td><code>Invalid choice. Please enter a valid option.</code></td>
+      <td>Typo or a key that does not exist in the current menu.</td>
+      <td>Re-enter the key exactly as listed; <kbd>q</kbd> always leaves the current menu.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>General notes</h3>
+<ul>
+  <li><strong>No confirmation prompts on most destructive actions.</strong> Options such as 1 → 5 (force shutdown), 2 → 5 (delete pool), 3 → 8 (delete network), 4 → 2 (delete snapshot), and 6 → 8 (ufw reset) act immediately. Only 1 → 13 (<a href="#hs-delete-vm">1.4 Delete a VM</a>) requires typing <code>DELETE</code>, and <a href="#hs-uninstaller">12.2 Uninstaller</a> requires typing <code>remove</code>.</li>
+  <li><strong>Default values.</strong> Empty input at a <code>[default]</code> prompt means <code>default</code>.</li>
+  <li><strong>Restart expectations.</strong> DHCP reservation changes, network edits, VNC/device XML changes, and port-forwarding rules usually require a VM <em>stop and start</em> rather than a reboot or hot-plug.</li>
+  <li><strong>Database file.</strong> <code>bashvm.db</code> is created relative to the <em>current working directory</em>. Run all scripts from the same directory, or the port-forwarding scripts will see an empty database.</li>
+  <li><strong>Logging.</strong> The scripts do not log to a file; errors come from the underlying <code>virsh</code>/<code>ufw</code>/<code>iptables</code>/<code>sqlite3</code> output as it happens. Scroll back in your terminal to review it.</li>
+  <li><strong>Editor.</strong> Menu 5 and 7 → 4 invoke an editor via <code>$EDITOR</code> or explicit <code>nano</code>/<code>vim</code>. Set <code>EDITOR</code> if you prefer something else.</li>
+  <li><strong>Systemd units.</strong> <code>bashvm-ipv6-accept-ra.service</code> is created by the DHCPv6 and routed-IPv6 options to re-apply <code>accept_ra = 2</code> on boot. Remove it with <code>systemctl disable --now bashvm-ipv6-accept-ra.service</code> if you no longer use IPv6.</li>
+  <li><strong>Root required.</strong> All scripts that touch libvirt, iptables, ufw, or systemd unit files must be run as <strong>root</strong>.</li>
+</ul>
+
+</main>
+
+</div>
+
+</body>
+</html>
