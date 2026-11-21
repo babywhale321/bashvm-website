@@ -3,16 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <meta name="theme-color" content="#333333">
     <title>bashvm</title>
     <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #707070;
             color: #333;
+            line-height: 1.5;
+            overflow-x: hidden;
         }
+
         .container {
             max-width: 800px;
             margin: 80px auto 20px;
@@ -22,163 +35,248 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
         h1 {
             text-align: center;
-            color: #000000;
+            color: #000;
+            font-size: clamp(1.6rem, 6vw, 2rem);
+            margin: 0 0 0.6em;
         }
+
         p {
             text-align: center;
-            font-size: 1.1em;
+            font-size: clamp(1rem, 3.6vw, 1.1em);
         }
-        .modern-button {
-            background-color: #000000;
-            color: white;
-            border: none;
+
+        .release-name {
+            font-weight: bold;
+            text-decoration: underline;
+            overflow-wrap: anywhere;
+        }
+
+        .download-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .download-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 340px;
+            min-height: 48px;
+            padding: 12px 20px;
+            background-color: #000;
+            color: #fff;
+            border: 2px solid #000;
             border-radius: 5px;
             font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
             text-decoration: none;
-            margin: 10px auto;
-            width: 50%;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            transition: background-color 0.3s, color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
-        .modern-button:hover {
-            background-color: #2e2e2e;
-            transform: translateY(-2px);
+        @media (hover: hover) {
+            .download-button:hover {
+                background-color: #fff;
+                color: #000;
+            }
         }
 
-        .modern-button:active {
-            transform: translateY(0);
+        .download-button:focus-visible {
+            outline: 3px solid #333;
+            outline-offset: 3px;
         }
 
-        a.modern-button-link {
-            color: white;
+        .archive-link {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 4px;
+            color: #000;
+            font-size: 1em;
+        }
+
+        .archive-link:hover {
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            padding: 12px 20px;
-            box-sizing: border-box;
         }
-        
+
         #menu {
-            background-color: #333;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
             position: fixed;
             top: 0;
-            width: 100%;
+            left: 0;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        #menu a {
+
+        #menu summary {
+            display: inline-flex;
+            align-items: center;
+            min-height: 48px;
+            padding: 12px 20px;
+            background-color: #333;
+            color: #fff;
+            font-size: 17px;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        #menu summary::-webkit-details-marker {
+            display: none;
+        }
+
+        #menu nav {
+            display: flex;
+            flex-direction: column;
+            margin-top: 2px;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            background-color: #333;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        #menu nav a {
             display: flex;
             align-items: center;
-            color: white;
-            text-align: center;
-            padding: 14px 20px;
+            min-height: 44px;
+            padding: 12px 20px;
+            color: #fff;
             text-decoration: none;
-            font-size: 17px;
+            font-size: 16px;
+            white-space: nowrap;
             transition: background-color 0.3s, color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
-        #menu a:hover {
-            background-color: #575757;
-            color: white;
+
+        @media (hover: hover) {
+            #menu summary:hover,
+            #menu[open] summary {
+                background-color: #000;
+                color: #fff;
+            }
+
+            #menu nav a:hover {
+                background-color: #000;
+                color: #fff;
+            }
         }
-        .menu-icon {
-            margin-right: 5px;
+
+        #menu summary:focus-visible,
+        #menu nav a:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: -3px;
         }
-        .menu-icon:hover {
-            color: #4CAF50;
+
+        @media (max-width: 600px) {
+            #menu {
+                right: 0;
+            }
+
+            #menu summary {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                min-height: 48px;
+                padding: 10px 16px;
+                padding-top: calc(10px + env(safe-area-inset-top, 0px));
+                font-size: 16px;
+                border-radius: 0;
+            }
+
+            #menu nav {
+                width: 100%;
+                border-radius: 0;
+            }
+
+            #menu nav a {
+                min-height: 48px;
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+
+            .container {
+                margin: 68px 10px 10px;
+                padding: 16px;
+                border-radius: 6px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="menu">
-        <a href="index.html">
-            <i class="fas fa-home menu-icon"></i>Home
-        </a>
-        <a href="download.html">
-            <i class="fas fa-download menu-icon"></i>Download
-        </a>
-        <a href="documentation.html">
-            <i class="fas fa-book menu-icon"></i>Documentation
-        </a>
-        <a href="screenshots.html">
-            <i class="fas fa-image menu-icon"></i>Screenshots
-        </a>
-        <a href="sponsors.html">
-            <i class="fas fa-handshake menu-icon"></i>Sponsors
-        </a>
-        <a href="donate.html">
-            <i class="fas fa-donate menu-icon"></i>Donate
-        </a>
-        <a href="https://github.com/babywhale321/bashvm">
-            <i class="fab fa-github"></i>Github
-        </a>
-    </div>
+    <details id="menu">
+        <summary>Menu</summary>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="download.html">Download</a>
+            <a href="documentation.html">Documentation</a>
+            <a href="screenshots.html">Screenshots</a>
+            <a href="sponsors.html">Sponsors</a>
+            <a href="donate.html">Donate</a>
+            <a href="https://github.com/babywhale321/bashvm">Github</a>
+        </nav>
+    </details>
+
     <div class="container">
-        <br>
-        <h1><i class="fas fa-download"></i> Download</h1>
-        <br>
-        <p><b><u id="release-name">Loading...</u></b></p>
-        <p></p>
-        <button class="modern-button" id="button-zip">
-            <a href="#" class="modern-button-link" style="color:white;" id="link-zip">
-                <i class="fas fa-download"></i> bashvm.zip
-            </a>
-        </button>
-        <button class="modern-button" id="button-tar">
-            <a href="#" class="modern-button-link" style="color:white;" id="link-tar">
-                <i class="fas fa-download"></i> bashvm.tar.gz
-            </a>
-        </button>
-        <br>
-        <a href="https://bashvm.com/archive/">Other Versions</a>
+        <h1>Download</h1>
+        <p id="release-name" class="release-name">Loading...</p>
+
+        <div class="download-links">
+            <a href="#" class="download-button" id="link-zip">bashvm.zip</a>
+            <a href="#" class="download-button" id="link-tar">bashvm.tar.gz</a>
+        </div>
+
+        <a href="https://bashvm.com/archive/" class="archive-link">Other Versions</a>
     </div>
 
     <script>
         async function fetchLatestRelease() {
+            const releaseName = document.getElementById('release-name');
+            const zipLink = document.getElementById('link-zip');
+            const tarLink = document.getElementById('link-tar');
+
             try {
                 const response = await fetch('https://api.github.com/repos/babywhale321/bashvm/releases/latest');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const release = await response.json();
-                document.getElementById('release-name').innerText = release.name;
+                releaseName.innerText = release.name;
 
                 const assets = release.assets;
                 const zipAsset = assets.find(asset => asset.name.endsWith('.zip'));
                 const tarAsset = assets.find(asset => asset.name.endsWith('.tar.gz'));
 
                 if (zipAsset) {
-                    document.getElementById('link-zip').href = zipAsset.browser_download_url;
+                    zipLink.href = zipAsset.browser_download_url;
                 } else {
-                    document.getElementById('button-zip').style.display = 'none';
+                    zipLink.style.display = 'none';
                 }
 
                 if (tarAsset) {
-                    document.getElementById('link-tar').href = tarAsset.browser_download_url;
+                    tarLink.href = tarAsset.browser_download_url;
                 } else {
-                    document.getElementById('button-tar').style.display = 'none';
+                    tarLink.style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error fetching the latest release:', error);
-                document.getElementById('release-name').innerText = 'Failed to load release data';
-                document.getElementById('button-zip').style.display = 'none';
-                document.getElementById('button-tar').style.display = 'none';
+                releaseName.innerText = 'Failed to load release data';
+                zipLink.style.display = 'none';
+                tarLink.style.display = 'none';
             }
         }
 
         fetchLatestRelease();
-            </script>
+    </script>
 </body>
 </html>
